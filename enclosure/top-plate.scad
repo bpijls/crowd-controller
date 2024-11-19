@@ -50,7 +50,7 @@ translate([0,0,-baseThickness]){
     }
 }
 
-// place a ring around the LED-ring
+// place a ring around the LED-rings
 translate(dialLocation)
     ring(largeRingOuterDiameter, largeRingOuterDiameter+ringSpacerThickness, ringSpacerHeight);
 
@@ -58,6 +58,7 @@ translate(pushButtonLocation)
     ring(largeRingOuterDiameter, largeRingOuterDiameter+ringSpacerThickness, ringSpacerHeight);
 
 
+// module to creste a ring
 module ring(innerDiameter, outerDiameter, height){
     
     difference(){
@@ -66,6 +67,7 @@ module ring(innerDiameter, outerDiameter, height){
     }
 }
 
+// module to create an arc with a width
 module arcRing(innerDiameter, outerDiameter, rotationAngle, height){
     ringWidth = outerDiameter/2-innerDiameter/2;
     rotate_extrude(angle = rotationAngle){
@@ -75,6 +77,7 @@ module arcRing(innerDiameter, outerDiameter, rotationAngle, height){
     }
 }
 
+// module to create the base plate
 module basePlate(){
     union(){
         translate(dialLocation)

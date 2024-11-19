@@ -2,7 +2,6 @@ $fn=50;
 dialDiameter = 62;
 dialHeight = 15;
 dialInnerDiameter = 53;
-
 shaftOuterDiameterUpper = 12;
 shaftOuterDiameterLower = 8;
 shaftDiameter = 6.2;
@@ -14,9 +13,12 @@ nDimples = 8;
 dimpleRadius = 12;
 dimpleDistance = 3*dimpleRadius/4;
 
+// Base shape for the dial
 difference(){
+    // Create a filleted cylinder for the dial
     filletCylinder(dialDiameter, dialHeight, topFilletRadius, [true, false]);
 
+    // Use a polar array of cylinders to subtract dimples from the dial
     for (i = [0:nDimples-1])
     {
         rotate([0,0,i*360/nDimples])    
@@ -24,6 +26,7 @@ difference(){
                 cylinder(r=dimpleRadius, h=dialHeight, center=true);
     }
     
+    // Subtract the inner dial cylinder to make it hollow
     filletCylinder(dialInnerDiameter, dialHeight-2, topFilletRadius, [true, false]);
 }
 
@@ -37,27 +40,36 @@ difference(){
     }
 }
 
-
+// Function to create a filleted cylinder
+// diameter: diameter of the cylinder
+// height: height of the cylinder
+// filletRadius: radius of the fillet
+// filletTopBottom: array of two booleans, whether to fillet the top and bottom of the cylinder
 module filletCylinder(diameter, height, filletRadius, filletTopBottom){
     radius = diameter/2;
+
+    // To create the cylinder, a flat shape is revolved around the z-axis
     rotate_extrude()
     {
-    hull()
-    {
-        square([radius-filletRadius, height], center = false);
+        hull()
+        {
+            // The space between the axis and the fillets
+            square([radius-filletRadius, height], center = false);
 
-        translate([radius-filletRadius/2,filletRadius/2,0])
-            if (filletTopBottom[1])
-                circle(r=filletRadius/2, center = true);
-                else
-                    square(size=filletRadius, center = true);
-                   
-
-        translate([radius-filletRadius/2,height-filletRadius/2,0])
-            if (filletTopBottom[0])
-                circle(r=filletRadius/2);
-                else                    
-                    square(size=filletRadius, center = true);
-    }
+            // Either a circle or a square is used to create the fillet
+            translate([radius-filletRadius/2,filletRadius/2,0])
+                // if the fillet for the bottom is enabled, create a circle
+                if (filletTopBottom[1])
+                    circle(r=filletRadius/2, center = true);
+                    else // otherwise, create a square
+                        square(size=filletRadius, center = true);
+                    
+            // Same for the top fillet
+            translate([radius-filletRadius/2,height-filletRadius/2,0])
+                if (filletTopBottom[0])
+                    circle(r=filletRadius/2);
+                    else                    
+                        square(size=filletRadius, center = true);
+        }
     }   
 }
