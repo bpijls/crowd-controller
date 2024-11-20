@@ -9,8 +9,8 @@
 
 // GPIO pins for the button and rotary encoder
 #define BUTTON_PIN     7
-#define ROTARY_PIN_A   5
-#define ROTARY_PIN_B   6
+#define ROTARY_PIN_A   9
+#define ROTARY_PIN_B   8
 
 BLECharacteristic *pButtonCharacteristic;
 BLECharacteristic *pRotaryCharacteristic;
