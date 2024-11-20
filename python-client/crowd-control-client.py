@@ -1,9 +1,12 @@
 import asyncio
+import mido
 from bleak import BleakClient, BleakScanner
 
 SERVICE_UUID = "3796c365-5633-4744-bc65-cac7812ef6da"
 BUTTON_CHARACTERISTIC_UUID = "640033f1-08e8-429c-bd45-49ed4a60114e"
 ROTARY_CHARACTERISTIC_UUID = "2a9ceeec-2d26-4520-bffe-8b13f00d4044"
+
+midiPort = mido.open_output("CrowdController")
 
 async def handle_device(device):
     address = device.address
@@ -24,7 +27,9 @@ async def handle_device(device):
                     print(f"Device {address}: Button={button_state}, Rotary={rotary_position}")
 
                     # TODO: Implement sending data to virtual MIDI port here
-
+                    cc_message = mido.Message('control_change', channel=1, control= 1, value=rotary_position % 127)
+                    midiPort.send(cc_message)
+                    
                     await asyncio.sleep(0.1)  # Adjust the polling interval as needed
             except asyncio.CancelledError:
                 print(f"Disconnected from {address}")
