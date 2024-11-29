@@ -1,7 +1,7 @@
 # Replace the text below to customize your site
 site_name: Crowd Controller
 site_description: Crowd Controller
-site_author: Team Propedeuse
+site_author: Bas Pijls
 copyright: Copyright 2024 Bas Pijls
 
 # site_url: https://knowledgebase.hbo-ict-hva.nl
@@ -17,8 +17,9 @@ theme:
   # custom_dir: mdocotion
   hide_site_name: true
   content_margin_top: 0px
-  # logo: images/hbo-ict-upperleft.svg
-  # favicon: images/hbo-ict-upperleft.svg
+  icon:
+    logo: material/music-note-bluetooth
+  
 
   features:
     - search.share
