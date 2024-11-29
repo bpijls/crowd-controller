@@ -5,6 +5,7 @@ from bleak import BleakClient, BleakScanner
 SERVICE_UUID = "3796c365-5633-4744-bc65-cac7812ef6da"
 BUTTON_CHARACTERISTIC_UUID = "640033f1-08e8-429c-bd45-49ed4a60114e"
 ROTARY_CHARACTERISTIC_UUID = "2a9ceeec-2d26-4520-bffe-8b13f00d4044"
+WS2813_CHARACTERISTIC_UUID = "dcfd575f-b5d4-42c2-bf57-c5141fe2eaa9"
 
 midiPort = mido.open_output("CrowdController")
 
