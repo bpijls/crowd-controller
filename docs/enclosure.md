@@ -1,4 +1,4 @@
-# Crowd controller enclosure
+# Enclosure
 
 A Crowd Controller device is meant to be held with one hand and operated by another. Therefore the device is shaped like a "droplet" by connecting two circles with a curved line. The top circle contains the rotary encoder and the bottom circle contains the button. The LEDs are placed in a ring around both circles.
 

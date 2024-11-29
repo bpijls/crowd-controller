@@ -1,4 +1,4 @@
-# Crowd controller device
+# Firmware
 
 A single crowd controller device consists of:
 

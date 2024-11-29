@@ -1,4 +1,4 @@
-# Crowd Controller
+# Overview
 
 > A distributed midi controller.
 
