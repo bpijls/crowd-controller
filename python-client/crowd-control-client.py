@@ -7,72 +7,90 @@ BUTTON_CHARACTERISTIC_UUID = "640033f1-08e8-429c-bd45-49ed4a60114e"
 ROTARY_CHARACTERISTIC_UUID = "2a9ceeec-2d26-4520-bffe-8b13f00d4044"
 WS2813_CHARACTERISTIC_UUID = "dcfd575f-b5d4-42c2-bf57-c5141fe2eaa9"
 
-midiPort = mido.open_output("CrowdController")
+class CrowdController:
+    def __init__(self, address, midi_port, control):
+        self.address = address
+        self.midi_port = midi_port
+        self.client = BleakClient(address)
+        self.control = control
 
-async def handle_device(device):
-    address = device.address
-    async with BleakClient(address) as client:
-        if client.is_connected:
-            print(f"Connected to {address}")
-            try:
-                while True:
-                    # Read button characteristic
-                    button_data = await client.read_gatt_char(BUTTON_CHARACTERISTIC_UUID)
-                    button_state = int(button_data.decode())
-
-                    # Read rotary characteristic
-                    rotary_data = await client.read_gatt_char(ROTARY_CHARACTERISTIC_UUID)
-                    rotary_position = int(rotary_data.decode())
-
-                    # Process the data and send to virtual MIDI port
-                    print(f"Device {address}: Button={button_state}, Rotary={rotary_position}")
-
-                    # TODO: Implement sending data to virtual MIDI port here
-                    cc_message = mido.Message('control_change', channel=1, control= 1, value=rotary_position % 127)
-                    midiPort.send(cc_message)
-                    
-                    await asyncio.sleep(0.1)  # Adjust the polling interval as needed
-            except asyncio.CancelledError:
-                print(f"Disconnected from {address}")
+    async def connect(self):
+        print(f"Connecting to {self.address}...")
+        await self.client.connect()
+        if self.client.is_connected:
+            print(f"Connected to {self.address}")
         else:
-            print(f"Failed to connect to {address}")
+            print(f"Failed to connect to {self.address}")
 
-async def main():
-    # Create a list to store matched devices
+    async def disconnect(self):
+        print(f"Disconnecting from {self.address}...")
+        await self.client.disconnect()
+        print(f"Disconnected from {self.address}")
+
+    async def poll_characteristics(self):
+        try:
+            while self.client.is_connected:
+                # Read button characteristic
+                button_data = await self.client.read_gatt_char(BUTTON_CHARACTERISTIC_UUID)
+                button_state = int(button_data.decode())
+
+                # Read rotary characteristic
+                rotary_data = await self.client.read_gatt_char(ROTARY_CHARACTERISTIC_UUID)
+                rotary_position = int(rotary_data.decode())
+
+                # Process the data and send to virtual MIDI port
+                print(f"Device {self.address}: Button={button_state}, Rotary={rotary_position}")
+
+                cc_message = mido.Message('control_change', channel=1, control=self.control, value=rotary_position % 127)
+                self.midi_port.send(cc_message)
+
+                await asyncio.sleep(0.1)  # Adjust the polling interval as needed
+        except asyncio.CancelledError:
+            print(f"Polling stopped for {self.address}")
+
+async def discover_devices(service_uuid):
     matched_devices = []
 
     def detection_callback(device, advertisement_data):
         uuids = advertisement_data.service_uuids or []
-        if SERVICE_UUID.lower() in [uuid.lower() for uuid in uuids]:
+        if service_uuid.lower() in [uuid.lower() for uuid in uuids]:
             if device not in matched_devices:
                 matched_devices.append(device)
                 print(f"Found device: {device.name} ({device.address})")
 
-    # Create a scanner and register the detection callback
     scanner = BleakScanner()
     scanner.register_detection_callback(detection_callback)
 
-    # Start scanning
     print("Scanning for devices...")
     await scanner.start()
     await asyncio.sleep(5)  # Adjust the scan duration as needed
     await scanner.stop()
 
+    return matched_devices
+
+async def main():
+    midi_port = mido.open_output("CrowdController")
+    matched_devices = await discover_devices(SERVICE_UUID)
+
     if not matched_devices:
         print("No devices found with the specified service UUID.")
         return
 
-    # Connect to each device concurrently
-    print("Connecting to devices...")
-    tasks = [asyncio.create_task(handle_device(device)) for device in matched_devices]
+    controllers = [CrowdController(device.address, midi_port, control=i+1) for i, device in enumerate(matched_devices[:8])] # Limit to 8 devices
 
     try:
-        await asyncio.gather(*tasks)
+        # Connect to all controllers and start polling
+        for controller in controllers:
+            await controller.connect()
+
+        poll_tasks = [asyncio.create_task(controller.poll_characteristics()) for controller in controllers]
+        await asyncio.gather(*poll_tasks)
     except KeyboardInterrupt:
         print("Program interrupted by user. Disconnecting...")
-        for task in tasks:
-            task.cancel()
-        await asyncio.gather(*tasks, return_exceptions=True)
+    finally:
+        # Disconnect all controllers
+        for controller in controllers:
+            await controller.disconnect()
 
 if __name__ == "__main__":
     asyncio.run(main())
