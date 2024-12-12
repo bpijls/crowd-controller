@@ -40,9 +40,14 @@ class CrowdController:
 
                 # Process the data and send to virtual MIDI port
                 print(f"Device {self.address}: Button={button_state}, Rotary={rotary_position}")
-
-                cc_message = mido.Message('control_change', channel=0, control=self.control, value=rotary_position % 127)
-                self.midi_port.send(cc_message)
+             
+                cc_message_1 = mido.Message('control_change', channel=0, control=self.control+1, value=button_state * 127) # 0 = OFF, 127 = ON
+                self.midi_port.send(cc_message_1) 
+                print(cc_message_1)
+                
+                cc_message_2 = mido.Message('control_change', channel=0, control=self.control+2, value=rotary_position % 127)
+                self.midi_port.send(cc_message_2)
+                print(cc_message_2)
 
                 await asyncio.sleep(0.1)  # Adjust the polling interval as needed
         except asyncio.CancelledError:
@@ -76,7 +81,8 @@ async def main():
         print("No devices found with the specified service UUID.")
         return
 
-    controllers = [CrowdController(device.address, midi_port, control=i+1) for i, device in enumerate(matched_devices[:8])] # Limit to 8 devices
+    controllers = [CrowdController(device.address, midi_port, control=i+10) for i, device in enumerate(matched_devices[:8])] # Limit to 8 devices
+    # i * 10  for every new controller, gives every instance a range of 10 (1-9, 11-19, 21-29 etc.)
 
     try:
         # Connect to all controllers and start polling
