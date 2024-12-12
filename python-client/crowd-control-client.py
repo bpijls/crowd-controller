@@ -13,6 +13,9 @@ class CrowdController:
         self.midi_port = midi_port
         self.client = BleakClient(address)
         self.control = control
+        self.button_state = 0  # 0 = OFF, 127 = ON
+        self.previous_button_read = 0  # Tracks the previous button reading
+
 
     async def connect(self):
         print(f"Connecting to {self.address}...")
@@ -32,16 +35,22 @@ class CrowdController:
             while self.client.is_connected:
                 # Read button characteristic
                 button_data = await self.client.read_gatt_char(BUTTON_CHARACTERISTIC_UUID)
-                button_state = int(button_data.decode())
+                current_button_state = int(button_data.decode())
+
+                # Toggle button state only on a single press
+                if current_button_state == 1 and self.previous_button_state == 0:
+                    self.button_state = 127 if self.button_state == 0 else 0
+
+                self.previous_button_state = current_button_state  # Update the previous reading
 
                 # Read rotary characteristic
                 rotary_data = await self.client.read_gatt_char(ROTARY_CHARACTERISTIC_UUID)
                 rotary_position = int(rotary_data.decode())
 
                 # Process the data and send to virtual MIDI port
-                print(f"Device {self.address}: Button={button_state}, Rotary={rotary_position}")
+                print(f"Device {self.address}: Button={self.button_state}, Rotary={rotary_position}")
              
-                cc_message_1 = mido.Message('control_change', channel=0, control=self.control+1, value=button_state * 127) # 0 = OFF, 127 = ON
+                cc_message_1 = mido.Message('control_change', channel=0, control=self.control+1, value=self.button_state)
                 self.midi_port.send(cc_message_1) 
                 print(cc_message_1)
                 
