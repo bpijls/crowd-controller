@@ -41,7 +41,7 @@ class CrowdController:
                 # Process the data and send to virtual MIDI port
                 print(f"Device {self.address}: Button={button_state}, Rotary={rotary_position}")
 
-                cc_message = mido.Message('control_change', channel=1, control=self.control, value=rotary_position % 127)
+                cc_message = mido.Message('control_change', channel=0, control=self.control, value=rotary_position % 127)
                 self.midi_port.send(cc_message)
 
                 await asyncio.sleep(0.1)  # Adjust the polling interval as needed
