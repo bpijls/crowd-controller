@@ -83,6 +83,7 @@ async def discover_devices(service_uuid):
     return matched_devices
 
 async def main():
+
     midi_port = mido.open_output("CrowdController")
     matched_devices = await discover_devices(SERVICE_UUID)
 
@@ -90,8 +91,8 @@ async def main():
         print("No devices found with the specified service UUID.")
         return
 
-    controllers = [CrowdController(device.address, midi_port, control=i+10) for i, device in enumerate(matched_devices[:8])] # Limit to 8 devices
-    # i * 10  for every new controller, gives every instance a range of 10 (11-19, 21-29 etc.)
+    controllers = [CrowdController(device.address, midi_port, control=i*10) for i, device in enumerate(matched_devices[:8], start=1)] # Limit to 8 devices
+    # i * 10  for every new controller, starting at 1, gives every instance a range of 10 (11-19, 21-29 etc.)
 
     try:
         # Connect to all controllers and start polling
