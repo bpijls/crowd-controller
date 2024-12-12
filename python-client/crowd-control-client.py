@@ -91,7 +91,7 @@ async def main():
         return
 
     controllers = [CrowdController(device.address, midi_port, control=i+10) for i, device in enumerate(matched_devices[:8])] # Limit to 8 devices
-    # i * 10  for every new controller, gives every instance a range of 10 (1-9, 11-19, 21-29 etc.)
+    # i * 10  for every new controller, gives every instance a range of 10 (11-19, 21-29 etc.)
 
     try:
         # Connect to all controllers and start polling
