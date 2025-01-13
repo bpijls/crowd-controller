@@ -18,8 +18,6 @@ RotaryEncoder encoder(ROTARY_PIN_IN1, ROTARY_PIN_IN2, RotaryEncoder::LatchMode::
 LEDRingController dialRing(strip, 0, 15);     // LEDs 0-15
 LEDRingController buttonRing(strip, 16, 23);  // LEDs 16-23
 
-PushButton dialButton(DIAL_BUTTON_PIN);
-PushButton button(BUTTON_PIN);
 
 uint8_t encoderSwitchStatus = HIGH;
 uint8_t switchStatus = HIGH;
@@ -40,8 +38,7 @@ void setup() {
 
   buttonRing.setBehavior(&springy);
   dialRing.setBehavior(&heartbeat);
-  dialButton.begin();
-  button.begin();
+  
 }
 
 void loop() {
