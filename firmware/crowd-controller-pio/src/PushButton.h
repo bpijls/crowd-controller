@@ -57,12 +57,12 @@ public:
 
     // Check if the button was just pressed
     bool wasPressed() const {
-        return (currentState && !lastState); // Adjusted for pull-up logic
+        return (!currentState && lastState); // Adjusted for pull-up logic
     }
 
     // Check if the button was just released
     bool wasReleased() const {
-        return (!currentState && lastState); // Adjusted for pull-up logic
+        return (currentState && !lastState); // Adjusted for pull-up logic
     }
 };
 
