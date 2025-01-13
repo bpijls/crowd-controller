@@ -9,6 +9,8 @@
 
 #define NUM_LEDS 24   // Popular NeoPixel ring size
 
+#define DIAL_SCALE_FACTOR 2
+
 // UUIDs for the service and characteristics
 #define SERVICE_UUID "3796c365-5633-4744-bc65-cac7812ef6da"
 #define BUTTON_CHARACTERISTIC_UUID "640033f1-08e8-429c-bd45-49ed4a60114e"
