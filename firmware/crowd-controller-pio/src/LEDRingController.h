@@ -1,4 +1,3 @@
-#include "Arduino.h"
 #ifndef _LED_CONTROLLER_H
 #define _LED_CONTROLLER_H
 #include <Adafruit_NeoPixel.h>
@@ -8,13 +7,13 @@
 #include "LEDBehavior.h"
 
 class LEDRingController {
-private:
-  Adafruit_NeoPixel& strip;
+private:  
   uint8_t startIndex;                 // Starting LED index of the segment
   uint8_t endIndex;                   // Ending LED index of the segment
   std::vector<uint32_t> pixelValues;  // Stores the pixel values for the segment
   int16_t brightness;                 // Current brightness level
   LEDBehavior* behavior;              // Pointer to the assigned behavior  
+  Adafruit_NeoPixel& strip;
 
 public:
 
