@@ -1,6 +1,6 @@
 
-#include "led_behavior.h"
-#include "led_ring_controller.h"
+#include "LEDBehavior.h"
+#include "LEDRingController.h"
 
 void SpringyBehavior::update(float deltaTime, LEDRingController& controller)  {
   spring.update(deltaTime);

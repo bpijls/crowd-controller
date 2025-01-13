@@ -27,8 +27,6 @@ uint8_t switchStatus = HIGH;
 uint8_t dialMode = 0;
 
 // Assign a springy behavior
-SpringyBehavior springy(0.0f, 1.5f, 2.0f, 2.0f);
-HeartbeatBehavior heartbeat(1.0f);  // 1-second interval
 
 void setup() {
   Serial.begin(9600);

@@ -4,7 +4,8 @@
 #include <Adafruit_NeoPixel.h>
 #include <vector>
 
-class LEDBehavior;  // Forward declaration of LEDBehavior
+// class LEDBehavior;  // Forward declaration of LEDBehavior
+#include "LEDBehavior.h"
 
 class LEDRingController {
 private:

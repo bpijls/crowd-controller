@@ -2,7 +2,7 @@
 #define _LED_BEHAVIOR_H
 
 #include <stdint.h>
-#include "springy_value.h"  // Assuming SpringyValue is a standalone class
+#include "SpringyValue.h"  // Assuming SpringyValue is a standalone class
 
 class LEDRingController;
 
