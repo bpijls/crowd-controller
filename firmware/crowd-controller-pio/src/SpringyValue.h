@@ -12,7 +12,7 @@ public:
   float stiffness;
   float mass;
 
-  SpringyValue(float startPosition, float damping, float stiffness, float mass){
+  SpringyValue(float startPosition, float stiffness, float damping, float mass){
     this->damping = damping;
     this->velocity = 0.0f;
     this->position = startPosition;
