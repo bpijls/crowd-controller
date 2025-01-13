@@ -32,7 +32,7 @@ int lastBLEUpdateTime = 0;
 BLEServer *pServer;
 BLEService *pService;
 
-SpringyBehavior springy(0.0f, 1.5f, 2.0f, 2.0f);
+SpringyBehavior springy(10.0f, 0.5f, 2.0f, 0.01f);
 HeartbeatBehavior heartbeat(1.0f);  // 1-second interval
 ColorCycleBehavior colorCycle;
 
@@ -60,19 +60,6 @@ class MyServerCallbacks : public BLEServerCallbacks {
         startAdvertising();
     }
 };
-
-void updateEncoder()
-{
-    encoder.tick();    
-
-    if (encoder.getDirection() != RotaryEncoder::Direction::NOROTATION)
-    {
-        int pos = encoder.getPosition();
-        pos = constrain(pos, 0, 127);   
-        pRotaryCharacteristic->setValue(String(pos).c_str());
-        Serial.println(String("Rotary value: ") + pos);
-    }
-}
 
 void initBLE()
 {
@@ -107,11 +94,9 @@ void initBLE()
     BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
     pAdvertising->addServiceUUID(SERVICE_UUID);
     pAdvertising->setScanResponse(true);
-    pAdvertising->setMinPreferred(0x06); // Helps with iPhone connection issues
     pAdvertising->setMinPreferred(0x12);
-    BLEDevice::startAdvertising();
-    dialRing.setBehavior(&heartbeat);
-    dialRing.setColor(0x0000FF);
+    startAdvertising();
+
     Serial.println("BLE device started, waiting for connections...");
 }
 
@@ -120,16 +105,15 @@ void resetBLEConnection()
     Serial.println("Resetting BLE connection...");
     if (pServer) {
         pServer->disconnect(pServer->getConnId());
-        BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
-        pAdvertising->start();
+        startAdvertising();
         Serial.println("Advertising restarted.");
     }
 }
 
 void sendBLEData()
-{
+{    
     pButtonCharacteristic->setValue(String(pushButton.isPressed()).c_str());
-    pRotaryCharacteristic->setValue(String(encoder.getPosition()).c_str());
+    pRotaryCharacteristic->setValue(String(encoder.getPosition()/2).c_str());
 }
 
 void setup()
@@ -138,16 +122,18 @@ void setup()
     Serial.println("Starting Crowd Controller...");
     pushButton.begin();
     dialButton.begin();
-    buttonRing.setBehavior(&colorCycle);
+    buttonRing.setBehavior(&springy);
+    buttonRing.setColor(Adafruit_NeoPixel::Color(255, 0, 0));
     initBLE();
 }
 
 void loop()
 {
     TimeKeeper::update();
-    updateEncoder();
+    
     dialButton.update();
     pushButton.update();
+    encoder.tick();
 
     dialRing.update(TimeKeeper::getDeltaTime());
     buttonRing.update(TimeKeeper::getDeltaTime());
@@ -158,14 +144,15 @@ void loop()
         lastBLEUpdateTime = millis();
     }
 
+    if (pushButton.wasPressed())
+    {
+        Serial.println("Push button pressed!");
+        springy.spring.perturb(255);
+    }
+
     if (dialButton.wasPressed())
     {
         Serial.println("Dial button pressed!");
-        resetBLEConnection();        
-    }
-
-    if (dialButton.wasReleased())
-    {
-        Serial.println("Dial button released!");
+        //resetBLEConnection();        
     }
 }
