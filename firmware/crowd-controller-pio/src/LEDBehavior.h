@@ -38,4 +38,14 @@ public:
   void update(float deltaTime, LEDRingController& controller) override;
 };
 
+class ColorCycleBehavior : public LEDBehavior {
+private:
+  uint8_t hue;
+public:
+  ColorCycleBehavior() {}
+
+  void update(float deltaTime, LEDRingController& controller) override;
+};
+
+
 #endif
