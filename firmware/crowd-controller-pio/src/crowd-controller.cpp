@@ -67,7 +67,8 @@ void updateEncoder()
 
     if (encoder.getDirection() != RotaryEncoder::Direction::NOROTATION)
     {
-        int pos = encoder.getPosition();        
+        int pos = encoder.getPosition();
+        pos = constrain(pos, 0, 127);   
         pRotaryCharacteristic->setValue(String(pos).c_str());
         Serial.println(String("Rotary value: ") + pos);
     }
