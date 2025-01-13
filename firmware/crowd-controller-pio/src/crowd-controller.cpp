@@ -26,19 +26,17 @@ LEDRingController buttonRing(strip, 16, 23); // LEDs 16-23
 PushButton dialButton(DIAL_BUTTON_PIN);
 PushButton pushButton(PUSH_BUTTON_PIN);
 
+int BLEUpdateIntervalMs = 10;
+int lastBLEUpdateTime = 0;
+
 void updateEncoder()
 {
-    // put your main code here, to run repeatedly:
-    static int pos = 0;
-    encoder.tick();
+    encoder.tick();    
 
-    int newPos = encoder.getPosition();
-
-    if (pos != newPos)
+    if (encoder.getDirection() != RotaryEncoder::Direction::NOROTATION)
     {
-        pos = newPos;
-        String rotaryValue = String(pos);
-        pRotaryCharacteristic->setValue(rotaryValue.c_str());
+        int pos = encoder.getPosition();
+        pRotaryCharacteristic->setValue(String(pos).c_str());
         Serial.println(String("Rotary value: ") + pos);
     }
 }
@@ -82,28 +80,47 @@ void initBLE()
     Serial.println("BLE device started, waiting for connections...");
 }
 
+void sendBLEData()
+{
+    pButtonCharacteristic->setValue(String(pushButton.isPressed()).c_str());
+    pRotaryCharacteristic->setValue(String(encoder.getPosition()).c_str());
+}
+
 void setup()
 {
     Serial.begin(115200);
     Serial.println("Starting Crowd Controller...");
+    pushButton.begin();
+    dialButton.begin();
     initBLE();
 }
 
 void loop()
 {
-    static int lastButtonState = HIGH;
-
+    TimeKeeper::update();
     updateEncoder();
-
     dialButton.update();
     pushButton.update();
 
     dialRing.update(TimeKeeper::getDeltaTime());
     buttonRing.update(TimeKeeper::getDeltaTime());
 
-    if (pushButton.wasPressed())
-        Serial.println("Button was pressed!");
+    if (millis() - lastBLEUpdateTime > BLEUpdateIntervalMs)
+    {
+        sendBLEData();
+        lastBLEUpdateTime = millis();
+    }
 
 
-    delay(10); // Adjust delay as needed
+    if (dialButton.wasPressed())
+    {
+        Serial.println("Dial button pressed!");
+    }
+
+    if (dialButton.wasReleased())
+    {
+        Serial.println("Dial button released!");
+    }
+
+
 }
