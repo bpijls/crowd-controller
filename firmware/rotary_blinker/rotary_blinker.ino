@@ -1,11 +1,12 @@
 
 #include <RotaryEncoder.h>
 #include <Adafruit_NeoPixel.h>
-#include "push_button.h"
-#include "led_behavior.h"
-#include "led_ring_controller.h"
-#include "config.h"
-#include "time_keeper.h"
+#include "../crowd-controller/push_button.h"
+#include "../crowd-controller/led_behavior.h"
+#include "../crowd-controller/led_behavior.cpp"
+#include "../crowd-controller/led_ring_controller.h"
+#include "../crowd-controller/config.h"
+#include "../crowd-controller/timekeeper.h"
 
 // Define the static strip instance
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, WS2812_PIN, NEO_GRB + NEO_KHZ800);
@@ -64,7 +65,7 @@ void loop() {
   dialRing.update(TimeKeeper::getDeltaTime());
   buttonRing.update(TimeKeeper::getDeltaTime());
 
-  Serial.println(String(springy.spring.position,3) + "\t" + buttonRing.getBrightness());
+  //Serial.println(String(springy.spring.position,3) + "\t" + buttonRing.getBrightness());
 }
 
 void updateEncoder() {
@@ -75,7 +76,7 @@ void updateEncoder() {
   int newPos = encoder.getPosition();
   if (pos != newPos) {
     pos = newPos;
-    //dialRing.setGauge(pos % 255);
+    dialRing.setGauge(pos % 255);
     //Serial.println(String(dialRing.nActivePixels) + "," + String(pos));
     if (dialMode) 
       springy.spring.damping = pos/10.0;

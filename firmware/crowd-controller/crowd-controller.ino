@@ -9,9 +9,10 @@
 #define WS2813_CHARACTERISTIC_UUID "dcfd575f-b5d4-42c2-bf57-c5141fe2eaa9"
 
 // GPIO pins for the button and rotary encoder
+
 #define BUTTON_PIN 7
-#define ROTARY_PIN_A 9
-#define ROTARY_PIN_B 8
+#define ROTARY_PIN_A 0
+#define ROTARY_PIN_B 1
 
 BLECharacteristic *pButtonCharacteristic;
 BLECharacteristic *pRotaryCharacteristic;
