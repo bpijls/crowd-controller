@@ -29,6 +29,37 @@ PushButton pushButton(PUSH_BUTTON_PIN);
 int BLEUpdateIntervalMs = 10;
 int lastBLEUpdateTime = 0;
 
+BLEServer *pServer;
+BLEService *pService;
+
+SpringyBehavior springy(0.0f, 1.5f, 2.0f, 2.0f);
+HeartbeatBehavior heartbeat(1.0f);  // 1-second interval
+
+void startAdvertising()
+{
+    BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+    dialRing.setBehavior(&heartbeat);
+    dialRing.setColor(Adafruit_NeoPixel::Color(0, 0, 255));
+    pAdvertising->start();
+}
+
+class MyServerCallbacks : public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+        Serial.println("Client connected!");
+        dialRing.setColor(Adafruit_NeoPixel::Color(0, 255, 0));
+    }
+
+    void onConnectionFailed(BLEServer* pServer) {
+        Serial.println("Connection failed!");
+        startAdvertising();
+    }
+
+    void onDisconnect(BLEServer* pServer) {
+        Serial.println("Client disconnected!");
+        startAdvertising();
+    }
+};
+
 void updateEncoder()
 {
     encoder.tick();    
@@ -46,8 +77,9 @@ void initBLE()
     // Initialize BLE
     Serial.println("Starting BLE work!");
     BLEDevice::init("AI EDM Controller");
-    BLEServer *pServer = BLEDevice::createServer();
-    BLEService *pService = pServer->createService(SERVICE_UUID);
+    pServer = BLEDevice::createServer();
+    pServer->setCallbacks(new MyServerCallbacks());
+    pService = pServer->createService(SERVICE_UUID);
 
     // Create characteristics without PROPERTY_NOTIFY
     pButtonCharacteristic = pService->createCharacteristic(
@@ -76,8 +108,20 @@ void initBLE()
     pAdvertising->setMinPreferred(0x06); // Helps with iPhone connection issues
     pAdvertising->setMinPreferred(0x12);
     BLEDevice::startAdvertising();
-
+    dialRing.setBehavior(&heartbeat);
+    dialRing.setColor(0x0000FF);
     Serial.println("BLE device started, waiting for connections...");
+}
+
+void resetBLEConnection()
+{
+    Serial.println("Resetting BLE connection...");
+    if (pServer) {
+        pServer->disconnect(pServer->getConnId());
+        BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+        pAdvertising->start();
+        Serial.println("Advertising restarted.");
+    }
 }
 
 void sendBLEData()
@@ -111,16 +155,14 @@ void loop()
         lastBLEUpdateTime = millis();
     }
 
-
     if (dialButton.wasPressed())
     {
         Serial.println("Dial button pressed!");
+        resetBLEConnection();        
     }
 
     if (dialButton.wasReleased())
     {
         Serial.println("Dial button released!");
     }
-
-
 }
