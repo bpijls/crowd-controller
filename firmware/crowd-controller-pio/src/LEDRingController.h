@@ -44,7 +44,7 @@ public:
 
     // The behavior modifies the brihgtness
     if (behavior) {
-      behavior->update(deltaTime, *this);
+      behavior->update(deltaTime);
     }
 
     for (uint8_t i = 0; i < nActivePixels; ++i) {
@@ -74,11 +74,7 @@ public:
   // Assign a behavior to the LED segment
   void setBehavior(LEDBehavior* newBehavior) {
     behavior = newBehavior;
-  }
-
-  void setGauge(uint8_t value){
-    nActivePixels = map(value, 0, 63, 0, nTotalPixels+1);
-    nActivePixels = constrain(nActivePixels, 0, nTotalPixels);
+    behavior->pController = this;
   }
 
   // Getters for segment information
@@ -94,9 +90,19 @@ public:
   Adafruit_NeoPixel& getStrip() {
     return strip;
   }
+
   std::vector<uint32_t>& getPixelValues() {
     return pixelValues;
   }
+
+  void setPixelColor(uint8_t index, uint32_t color) {
+    pixelValues[index] = color;
+  }
+
+  void setPixelColor(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
+    pixelValues[index] = strip.Color(r, g, b);
+  }
+
 };
 
 
