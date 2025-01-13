@@ -28,13 +28,17 @@ PushButton pushButton(PUSH_BUTTON_PIN);
 
 int BLEUpdateIntervalMs = 10;
 int lastBLEUpdateTime = 0;
+int dialPosition = 0;
+int oldDialPosition = 0;
+int ccDialPosition = 0;
 
 BLEServer *pServer;
 BLEService *pService;
 
-SpringyBehavior springy(10.0f, 0.5f, 2.0f, 0.01f);
+SpringyBehavior springy(20.0f, 180.0f, 15.0f, 60.0f);
 HeartbeatBehavior heartbeat(1.0f);  // 1-second interval
 ColorCycleBehavior colorCycle;
+GaugeBehavior gauge(0);
 
 void startAdvertising()
 {
@@ -42,6 +46,43 @@ void startAdvertising()
     dialRing.setBehavior(&heartbeat);
     dialRing.setColor(Adafruit_NeoPixel::Color(0, 0, 255));
     pAdvertising->start();
+}
+
+
+void handleSerialInput()
+{
+    if (Serial.available())
+    {
+        char c = Serial.read();
+        switch (c)
+        {
+            case 's':
+                springy.spring.stiffness += 0.1f;
+                break;
+            case 'S':
+                springy.spring.stiffness -= 0.1f;
+                break;
+            case 'd':
+                springy.spring.damping += 0.1f;
+                break;
+            case 'D':
+                springy.spring.damping -= 0.1f;
+                break;
+            case 'm':
+                springy.spring.mass += 0.1f;
+                break;
+            case 'M':
+                springy.spring.mass -= 0.1f;
+                break;
+        }
+
+        Serial.print("Stiffness: ");
+        Serial.print(springy.spring.stiffness);
+        Serial.print(" Damping: ");
+        Serial.print(springy.spring.damping);
+        Serial.print(" Mass: ");
+        Serial.println(springy.spring.mass);
+    }
 }
 
 class MyServerCallbacks : public BLEServerCallbacks {
@@ -138,6 +179,18 @@ void loop()
     dialRing.update(TimeKeeper::getDeltaTime());
     buttonRing.update(TimeKeeper::getDeltaTime());
 
+    if (encoder.getDirection() != RotaryEncoder::Direction::NOROTATION)
+    {
+        dialPosition = encoder.getPosition();
+        ccDialPosition += (dialPosition - oldDialPosition) * DIAL_SCALE_FACTOR;
+        oldDialPosition = dialPosition;
+        ccDialPosition = constrain(ccDialPosition, 0, 127);
+        dialRing.setBehavior(&gauge);
+        gauge.setValue(ccDialPosition);
+        Serial.println(ccDialPosition);
+    }
+    
+
     if (millis() - lastBLEUpdateTime > BLEUpdateIntervalMs)
     {
         sendBLEData();
@@ -153,6 +206,8 @@ void loop()
     if (dialButton.wasPressed())
     {
         Serial.println("Dial button pressed!");
-        //resetBLEConnection();        
+        resetBLEConnection();        
     }
+
+    handleSerialInput();
 }
