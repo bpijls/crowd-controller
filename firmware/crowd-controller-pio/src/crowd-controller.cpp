@@ -34,6 +34,7 @@ BLEService *pService;
 
 SpringyBehavior springy(0.0f, 1.5f, 2.0f, 2.0f);
 HeartbeatBehavior heartbeat(1.0f);  // 1-second interval
+ColorCycleBehavior colorCycle;
 
 void startAdvertising()
 {
@@ -66,7 +67,7 @@ void updateEncoder()
 
     if (encoder.getDirection() != RotaryEncoder::Direction::NOROTATION)
     {
-        int pos = encoder.getPosition();
+        int pos = encoder.getPosition();        
         pRotaryCharacteristic->setValue(String(pos).c_str());
         Serial.println(String("Rotary value: ") + pos);
     }
@@ -136,6 +137,7 @@ void setup()
     Serial.println("Starting Crowd Controller...");
     pushButton.begin();
     dialButton.begin();
+    buttonRing.setBehavior(&colorCycle);
     initBLE();
 }
 
