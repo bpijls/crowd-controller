@@ -16,33 +16,47 @@ class CrowdController:
 
     async def connect(self):
         print(f"Connecting to {self.address}...")
-        await self.client.connect()
-        if self.client.is_connected:
-            print(f"Connected to {self.address}")
-        else:
-            print(f"Failed to connect to {self.address}")
+        try:
+            await self.client.connect()
+            if self.client.is_connected:
+                print(f"Connected to {self.address}")
+            else:
+                print(f"Failed to connect to {self.address}")
+        except Exception as e:
+            print(f"Error connecting to {self.address}: {e}")
 
     async def disconnect(self):
         print(f"Disconnecting from {self.address}...")
-        await self.client.disconnect()
-        print(f"Disconnected from {self.address}")
+        try:
+            await self.client.disconnect()
+            print(f"Disconnected from {self.address}")
+        except Exception as e:
+            print(f"Error disconnecting from {self.address}: {e}")
 
     async def poll_characteristics(self):
         try:
             while self.client.is_connected:
-                # Read button characteristic
-                button_data = await self.client.read_gatt_char(BUTTON_CHARACTERISTIC_UUID)
-                button_state = int(button_data.decode())
+                try:
+                    # Read button characteristic
+                    button_data = await self.client.read_gatt_char(BUTTON_CHARACTERISTIC_UUID)
+                    button_state = int(button_data.decode())
 
-                # Read rotary characteristic
-                rotary_data = await self.client.read_gatt_char(ROTARY_CHARACTERISTIC_UUID)
-                rotary_position = int(rotary_data.decode())
+                    # Read rotary characteristic
+                    rotary_data = await self.client.read_gatt_char(ROTARY_CHARACTERISTIC_UUID)
+                    rotary_position = int(rotary_data.decode()) 
+                    
+                    # constrain rotary position to 0-127 ( <0 = 0, >127 = 127)
+                    rotary_position = min(127, max(0, rotary_position))
 
-                # Process the data and send to virtual MIDI port
-                print(f"Device {self.address}: Button={button_state}, Rotary={rotary_position}")
 
-                cc_message = mido.Message('control_change', channel=0, control=self.control, value=rotary_position % 127)
-                self.midi_port.send(cc_message)
+                    # Process the data and send to virtual MIDI port
+                    print(f"Device {self.address}: Button={button_state}, Rotary={rotary_position}")
+
+                    cc_message = mido.Message('control_change', channel=0, control=self.control, value=rotary_position)
+                    self.midi_port.send(cc_message)
+
+                except Exception as e:
+                    print(f"Error reading characteristics from {self.address}: {e}")
 
                 await asyncio.sleep(0.1)  # Adjust the polling interval as needed
         except asyncio.CancelledError:
