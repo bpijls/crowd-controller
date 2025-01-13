@@ -3,7 +3,7 @@
 
 #define ROTARY_PIN_IN1 1
 #define ROTARY_PIN_IN2 0
-#define BUTTON_PIN 7
+#define PUSH_BUTTON_PIN 7
 #define DIAL_BUTTON_PIN 10
 #define WS2812_PIN 3
 

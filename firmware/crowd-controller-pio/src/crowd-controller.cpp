@@ -1,16 +1,45 @@
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
-#include "config.h"
 #include <RotaryEncoder.h>
+#include "config.h"
+
+#include "Adafruit_NeoPixel.h"
+#include "LEDRingController.h"
+#include "PushButton.h"
+#include "TimeKeeper.h"
+
+// Define the static strip instance
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, WS2812_PIN, NEO_GRB + NEO_KHZ800);
 
 // GPIO pins for the button and rotary encoder
-
 BLECharacteristic *pButtonCharacteristic;
 BLECharacteristic *pRotaryCharacteristic;
 BLECharacteristic *pWS2812Characteristic;
 
 RotaryEncoder encoder(ROTARY_PIN_IN1, ROTARY_PIN_IN2, RotaryEncoder::LatchMode::TWO03);
+
+// Create instances for specific LED ranges
+LEDRingController dialRing(strip, 0, 15);     // LEDs 0-15
+LEDRingController buttonRing(strip, 16, 23);  // LEDs 16-23
+
+PushButton dialButton(DIAL_BUTTON_PIN);
+PushButton button(PUSH_BUTTON_PIN);
+
+void updateEncoder() {
+  // put your main code here, to run repeatedly:
+  static int pos = 0;
+  encoder.tick();
+
+  int newPos = encoder.getPosition();
+  
+  if (pos != newPos) {
+    pos = newPos;    
+    String rotaryValue = String(pos);
+    pRotaryCharacteristic->setValue(rotaryValue.c_str());
+    Serial.println(String("Rotary value: ") + pos);
+  }
+}
 
 void setup() {
   Serial.begin(115200);
@@ -76,17 +105,3 @@ void loop() {
 }
 
 
-void updateEncoder() {
-  // put your main code here, to run repeatedly:
-  static int pos = 0;
-  encoder.tick();
-
-  int newPos = encoder.getPosition();
-  
-  if (pos != newPos) {
-    pos = newPos;    
-    String rotaryValue = String(pos);
-    pRotaryCharacteristic->setValue(rotaryValue.c_str());
-    Serial.println(String("Rotary value: ") + pos);
-  }
-}
