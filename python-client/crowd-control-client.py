@@ -1,6 +1,7 @@
 import asyncio
 import mido
 from bleak import BleakClient, BleakScanner
+import json
 
 SERVICE_UUID = "3796c365-5633-4744-bc65-cac7812ef6da"
 BUTTON_CHARACTERISTIC_UUID = "640033f1-08e8-429c-bd45-49ed4a60114e"
@@ -9,6 +10,15 @@ WS2813_CHARACTERISTIC_UUID = "dcfd575f-b5d4-42c2-bf57-c5141fe2eaa9"
 
 dial_scale_factor = 4
 controllers = []
+colors = [
+    (255, 0, 0),  # Red
+    (0, 255, 0),  # Green
+    (0, 0, 255),  # Blue
+    (255, 255, 0),  # Yellow
+    (255, 0, 255),  # Magenta
+    (0, 255, 255),  # Cyan
+    (255, 255, 255),  # White
+]
 
 class CrowdController:
     def __init__(self, address, midi_port, control):
@@ -26,6 +36,8 @@ class CrowdController:
             await self.client.connect()
             if self.client.is_connected:
                 print(f"Connected to {self.address}")
+                color = colors[self.control % len(colors)]
+                await self.send_led_command(led_index=0, r=color[0], g=color[1], b=color[2])
             else:
                 print(f"Failed to connect to {self.address}")
         except Exception as e:
@@ -46,6 +58,9 @@ class CrowdController:
                 await self.client.connect()
                 if self.client.is_connected:
                     print(f"Reconnected to {self.address}")
+                    color = colors[self.control % len(colors)]
+                    await self.send_led_command(led_index=0, r=color[0], g=color[1], b=color[2])
+                    
             except Exception as e:
                 print(f"Reconnection failed for {self.address}: {e}")
             await asyncio.sleep(5)
@@ -85,6 +100,32 @@ class CrowdController:
         except asyncio.CancelledError:
             print(f"Polling stopped for {self.address}")
 
+    async def send_led_command(self, led_index, r, g, b):
+        """
+        Send an LED command to the ESP32 via the WS2813_CHARACTERISTIC_UUID.
+
+        Args:
+            led_index (int): The index of the LED to control.
+            r (int): Red value (0-255).
+            g (int): Green value (0-255).
+            b (int): Blue value (0-255).
+        """
+        if self.client.is_connected:
+            command = json.dumps({
+                "index": led_index,
+                "r": r,
+                "g": g,
+                "b": b
+            }).encode('utf-8')
+            try:
+                await self.client.write_gatt_char(WS2813_CHARACTERISTIC_UUID, command)
+                print(f"Sent LED command: {command}")
+            except Exception as e:
+                print(f"Error sending LED command: {e}")
+        else:
+            print(f"Cannot send LED command. Device {self.address} not connected.")
+
+
 async def discover_devices(service_uuid):
     matched_devices = []
 
@@ -115,7 +156,7 @@ async def monitor_new_devices(service_uuid, midi_port):
                 print(f"Adding new device: {device.address}")
                 new_controller = CrowdController(device.address, midi_port, control=len(controllers))
                 controllers.append(new_controller)
-                await new_controller.connect()
+                await new_controller.connect()                
                 asyncio.create_task(new_controller.poll_characteristics())
 
         await asyncio.sleep(10)  # Adjust the interval for scanning
@@ -134,7 +175,7 @@ async def main():
     try:
         # Connect to all controllers and start polling
         for controller in controllers:
-            await controller.connect()
+            await controller.connect()                        
 
         poll_tasks = [asyncio.create_task(controller.poll_characteristics()) for controller in controllers]
         monitor_task = asyncio.create_task(monitor_new_devices(SERVICE_UUID, midi_port))
