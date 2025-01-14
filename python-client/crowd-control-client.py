@@ -29,6 +29,8 @@ class CrowdController:
         self.last_rotary_position = 0
         self.rotary_position = 0
         self.midi_cc = 0
+        self.button_state = 0
+        self.last_button_state = 0
 
     async def connect(self):
         print(f"Connecting to {self.address}...")
@@ -70,25 +72,32 @@ class CrowdController:
             while True:
                 if self.client.is_connected:
                     try:
+
+                        buttonControl = ((self.control+1)*10)+1
                         # Read button characteristic
                         button_data = await self.client.read_gatt_char(BUTTON_CHARACTERISTIC_UUID)
-                        button_state = int(button_data.decode())
+                        self.last_button_state = self.button_state
+                        self.button_state = int(button_data.decode())
+
+                        if (self.last_button_state != self.button_state):
+                            # Send MIDI messages
+                            cc_message = mido.Message('control_change', channel=0, control=buttonControl, value=self.button_state * 127)
+                            self.midi_port.send(cc_message)
 
                         # Read rotary characteristic
+                        dialControl = buttonControl+1
                         rotary_data = await self.client.read_gatt_char(ROTARY_CHARACTERISTIC_UUID)
                         self.last_rotary_position = self.rotary_position
-                        self.rotary_position = int(rotary_data.decode()) 
-                        self.midi_cc += (self.rotary_position - self.last_rotary_position) * dial_scale_factor
+                        self.rotary_position = int(rotary_data.decode())
+                        rotary_change = (self.rotary_position - self.last_rotary_position) * dial_scale_factor 
+                        self.midi_cc += rotary_change
+                        
+                        if (rotary_change != 0):
+                            # Constrain rotary position to 0-127
+                            self.midi_cc = min(127, max(0, self.midi_cc))
 
-                        # Constrain rotary position to 0-127
-                        self.midi_cc = min(127, max(0, self.midi_cc))
-
-                        # Send MIDI messages
-                        cc_message = mido.Message('control_change', channel=0, control=self.control+8, value=button_state * 127)
-                        self.midi_port.send(cc_message)
-
-                        cc_message = mido.Message('control_change', channel=0, control=self.control, value=self.midi_cc)
-                        self.midi_port.send(cc_message)
+                            cc_message = mido.Message('control_change', channel=0, control=dialControl, value=self.midi_cc)
+                            self.midi_port.send(cc_message)
 
                     except Exception as e:
                         print(f"Error reading characteristics from {self.address}: {e}")
