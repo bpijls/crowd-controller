@@ -2,6 +2,8 @@
 #include <BLEUtils.h>
 #include <BLEServer.h>
 #include <RotaryEncoder.h>
+#include <ArduinoJson.h>
+
 #include "config.h"
 
 #include "Adafruit_NeoPixel.h"
@@ -102,6 +104,33 @@ class MyServerCallbacks : public BLEServerCallbacks {
     }
 };
 
+class WS2812Callbacks : public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *pCharacteristic) {
+        std::string value = pCharacteristic->getValue();
+        if (!value.empty()) {
+            StaticJsonDocument<128> doc;
+            DeserializationError error = deserializeJson(doc, value);
+
+            if (!error) {
+                int index = doc["index"].as<int>();
+                int r = doc["r"].as<int>();
+                int g = doc["g"].as<int>();
+                int b = doc["b"].as<int>();
+
+                if (index >= 0 && index < NUM_LEDS) {
+                    buttonRing.setColor(Adafruit_NeoPixel::Color(r, g, b));
+                    Serial.printf("LED %d set to R:%d G:%d B:%d\n", index, r, g, b);
+                } else {
+                    Serial.printf("Invalid LED index: %d\n", index);
+                }
+            } else {
+                Serial.println("Failed to parse LED command");
+            }
+        }
+    }
+};
+
+
 void initBLE()
 {
     // Initialize BLE
@@ -121,8 +150,10 @@ void initBLE()
         BLECharacteristic::PROPERTY_READ);
 
     pWS2812Characteristic = pService->createCharacteristic(
-        WS2813_CHARACTERISTIC_UUID,
+        WS2812_CHARACTERISTIC_UUID,
         BLECharacteristic::PROPERTY_WRITE);
+
+    pWS2812Characteristic->setCallbacks(new WS2812Callbacks());
 
     // Set initial values
     pButtonCharacteristic->setValue("0");
@@ -164,7 +195,10 @@ void setup()
     pushButton.begin();
     dialButton.begin();
     buttonRing.setBehavior(&springy);
+
+    
     buttonRing.setColor(Adafruit_NeoPixel::Color(255, 0, 0));
+    
     initBLE();
 }
 
