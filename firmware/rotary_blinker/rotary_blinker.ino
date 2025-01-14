@@ -1,17 +1,72 @@
 
 #include <RotaryEncoder.h>
 #include <Adafruit_NeoPixel.h>
+#include "../crowd-controller/push_button.h"
+#include "../crowd-controller/led_behavior.h"
+#include "../crowd-controller/led_behavior.cpp"
+#include "../crowd-controller/led_ring_controller.h"
+#include "../crowd-controller/config.h"
+#include "../crowd-controller/timekeeper.h"
 
-#define ROTARY_PIN_IN1 9
-#define ROTARY_PIN_IN2 8
-#define BUTTON_PIN_IN 7
-#define WS2812_DATA_PIN 4
-
-#define NUMPIXELS 32  // Popular NeoPixel ring size
+// Define the static strip instance
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, WS2812_PIN, NEO_GRB + NEO_KHZ800);
 
 // Setup a RotaryEncoder with 2 steps per latch for the 2 signal input pins:
 RotaryEncoder encoder(ROTARY_PIN_IN1, ROTARY_PIN_IN2, RotaryEncoder::LatchMode::TWO03);
-Adafruit_NeoPixel pixels(NUMPIXELS, WS2812_DATA_PIN, NEO_GRB + NEO_KHZ800);
+
+// Create instances for specific LED ranges
+LEDRingController dialRing(strip, 0, 15);     // LEDs 0-15
+LEDRingController buttonRing(strip, 16, 23);  // LEDs 16-23
+
+PushButton dialButton(DIAL_BUTTON_PIN);
+PushButton button(BUTTON_PIN);
+
+uint8_t encoderSwitchStatus = HIGH;
+uint8_t switchStatus = HIGH;
+
+uint8_t dialMode = 0;
+
+// Assign a springy behavior
+SpringyBehavior springy(0.0f, 1.5f, 2.0f, 2.0f);
+HeartbeatBehavior heartbeat(1.0f);  // 1-second interval
+
+void setup() {
+  Serial.begin(9600);
+  
+  // strip.setBrightness(20);
+  // Set colors for segments
+  dialRing.setColor(Adafruit_NeoPixel::Color(255, 0, 0));    // Red
+  buttonRing.setColor(Adafruit_NeoPixel::Color(0, 255, 0));  // Green
+
+  buttonRing.setBehavior(&springy);
+  dialRing.setBehavior(&heartbeat);
+  dialButton.begin();
+  button.begin();
+}
+
+void loop() {
+  TimeKeeper::update();
+
+  updateEncoder();
+  dialButton.update();
+  button.update();
+
+  if (button.wasPressed())
+    springy.spring.perturb(255);
+
+
+  if (dialButton.wasPressed()) {
+    dialMode = !dialMode;
+    uint32_t dialColor = dialMode ? Adafruit_NeoPixel::Color(255, 0, 0) : Adafruit_NeoPixel::Color(0, 0, 255);
+    dialRing.setColor(dialColor);
+  }
+
+  strip.clear();
+  dialRing.update(TimeKeeper::getDeltaTime());
+  buttonRing.update(TimeKeeper::getDeltaTime());
+
+  //Serial.println(String(springy.spring.position,3) + "\t" + buttonRing.getBrightness());
+}
 
 void updateEncoder() {
   // put your main code here, to run repeatedly:
@@ -20,57 +75,15 @@ void updateEncoder() {
 
   int newPos = encoder.getPosition();
   if (pos != newPos) {
-    Serial.print("pos:");
-    Serial.print(newPos);
-    Serial.print(" dir:");
-    Serial.println((int)(encoder.getDirection()));
     pos = newPos;
-    setPixels(abs(pos) / 4);
-  }  // if
-}
-
-void updateButton() {
-  static int status = 1;
-  int newStatus = digitalRead(BUTTON_PIN_IN);
-  if (status != newStatus) {
-    delay(50);
-    Serial.print(String("Button is ") + String(newStatus ? "UP" : "DOWN") + "!\n");
-    status = newStatus;
+    dialRing.setGauge(pos % 255);
+    Serial.println(String(dialRing.nActivePixels) + "," + String(pos));
+    if (dialMode) 
+      springy.spring.damping = pos/10.0;
+    else
+      springy.spring.stiffness = pos/10.0;
+    
+    //Serial.println(String(springy.spring.stiffness, 3) + "," + String(springy.spring.damping, 3));
+     
   }
-}
-
-void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(9600);
-  while (! Serial);
-
-  // END of Trinket-specific code.
-  //pixels.setBrightness(100);
-  pixels.begin();  // INITIALIZE NeoPixel strip object (REQUIRED)
-  pixels.clear();
-  pixels.show();
-  pinMode(BUTTON_PIN_IN, INPUT_PULLUP);
-}
-
-void setPixels(int gaugeValue) {
-  pixels.clear();
-  gaugeValue = gaugeValue % NUMPIXELS/2 + 1;
-  // The first NeoPixel in a strand is #0, second is 1, all the way up
-  // to the count of pixels minus one.
-  for (int i = 0; i < gaugeValue; i++) {  // For each pixel...
-
-    // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
-    // Here we're using a moderately bright green color:
-    pixels.setPixelColor(i, pixels.Color(0, 150, 0));
-  }
-
-  pixels.show();  // Send the updated pixel colors to the hardware.
-}
-
-
-void loop() {
-  pixels.clear();  // Set all pixel colors to 'off'
-
-  updateEncoder();
-  updateButton();
 }
