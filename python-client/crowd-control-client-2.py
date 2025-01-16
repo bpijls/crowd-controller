@@ -1,11 +1,24 @@
 import asyncio
 import mido
 from bleak import BleakClient, BleakScanner
+import json
 
 SERVICE_UUID = "3796c365-5633-4744-bc65-cac7812ef6da"
 BUTTON_CHARACTERISTIC_UUID = "640033f1-08e8-429c-bd45-49ed4a60114e"
 ROTARY_CHARACTERISTIC_UUID = "2a9ceeec-2d26-4520-bffe-8b13f00d4044"
 WS2813_CHARACTERISTIC_UUID = "dcfd575f-b5d4-42c2-bf57-c5141fe2eaa9"
+
+dial_scale_factor = 4
+controllers = []
+colors = [
+    (255, 0, 0),  # Red
+    (0, 255, 0),  # Green
+    (0, 0, 255),  # Blue
+    (255, 255, 0),  # Yellow
+    (255, 0, 255),  # Magenta
+    (0, 255, 255),  # Cyan
+    (255, 255, 255),  # White
+]
 
 class CrowdController:
     def __init__(self, address, midi_port, control):
@@ -13,53 +26,119 @@ class CrowdController:
         self.midi_port = midi_port
         self.client = BleakClient(address)
         self.control = control
-        self.button_state = 0  # 0 = OFF, 127 = ON
-        self.previous_button_state = 0  # Voor vorige knopstand
+        self.last_rotary_position = 0
+        self.rotary_position = 0
+        self.midi_cc = 0
+        self.button_state = 0
+        self.last_button_state = 0
 
     async def connect(self):
         print(f"Connecting to {self.address}...")
-        await self.client.connect()
-        if self.client.is_connected:
-            print(f"Connected to {self.address}")
-        else:
-            print(f"Failed to connect to {self.address}")
+        try:
+            await self.client.connect()
+            if self.client.is_connected:
+                print(f"Connected to {self.address}")
+                color = colors[self.control % len(colors)]
+                await self.send_led_command(led_index=0, r=color[0], g=color[1], b=color[2])
+            else:
+                print(f"Failed to connect to {self.address}")
+        except Exception as e:
+            print(f"Error connecting to {self.address}: {e}")
 
     async def disconnect(self):
         print(f"Disconnecting from {self.address}...")
-        await self.client.disconnect()
-        print(f"Disconnected from {self.address}")
+        try:
+            await self.client.disconnect()
+            print(f"Disconnected from {self.address}")
+        except Exception as e:
+            print(f"Error disconnecting from {self.address}: {e}")
+
+    async def reconnect(self):
+        while not self.client.is_connected:
+            print(f"Attempting to reconnect to {self.address}...")
+            try:
+                await self.client.connect()
+                if self.client.is_connected:
+                    print(f"Reconnected to {self.address}")
+                    color = colors[self.control % len(colors)]
+                    await self.send_led_command(led_index=0, r=color[0], g=color[1], b=color[2])
+                    
+            except Exception as e:
+                print(f"Reconnection failed for {self.address}: {e}")
+            await asyncio.sleep(5)
 
     async def poll_characteristics(self):
         try:
-            while self.client.is_connected:
-                # Lees button characteristic
-                button_data = await self.client.read_gatt_char(BUTTON_CHARACTERISTIC_UUID)
-                current_button_state = int(button_data.decode())
+            while True:
+                if self.client.is_connected:
+                    try:
 
-                # Toggle button state alleen bij overgang van 0 -> 1
-                if current_button_state == 1 and self.previous_button_state == 0:
-                    self.button_state = 127 if self.button_state == 0 else 0
 
-                self.previous_button_state = current_button_state  # Update de vorige waarde
+                        # Read button characteristic
+                        button_data = await self.client.read_gatt_char(BUTTON_CHARACTERISTIC_UUID)
+                        current_button_state = int(button_data.decode())
 
-                # Lees rotary characteristic
-                rotary_data = await self.client.read_gatt_char(ROTARY_CHARACTERISTIC_UUID)
-                rotary_position = int(rotary_data.decode())
+                        # Toggle button state only when transitioning from 0 -> 1
+                        if current_button_state == 1 and self.last_button_state == 0:
+                            self.button_state = 127 if self.button_state == 0 else 0
 
-                # Verwerk en stuur MIDI berichten
-                print(f"Device {self.address}: Button={self.button_state}, Rotary={rotary_position}")
-                
-                cc_message_1 = mido.Message('control_change', channel=0, control=self.control+1, value=self.button_state)
-                self.midi_port.send(cc_message_1) 
-                print(cc_message_1)
-                
-                cc_message_2 = mido.Message('control_change', channel=0, control=self.control+2, value=rotary_position % 127)
-                self.midi_port.send(cc_message_2)
-                print(cc_message_2)
+                        self.last_button_state = current_button_state  # Store previous state
 
-                await asyncio.sleep(0.1)  # Polling interval
+                        buttonControl = ((self.control+1)*10)+1
+                        cc_message = mido.Message('control_change', channel=0, control=buttonControl, value=self.button_state)
+                        self.midi_port.send(cc_message)
+
+
+                        # Read rotary characteristic
+                        dialControl = buttonControl+1
+                        rotary_data = await self.client.read_gatt_char(ROTARY_CHARACTERISTIC_UUID)
+                        self.last_rotary_position = self.rotary_position
+                        self.rotary_position = int(rotary_data.decode())
+                        rotary_change = (self.rotary_position - self.last_rotary_position) * dial_scale_factor 
+                        self.midi_cc += rotary_change
+                        
+                        if (rotary_change != 0):
+                            # Constrain rotary position to 0-127
+                            self.midi_cc = min(127, max(0, self.midi_cc))
+
+                            cc_message = mido.Message('control_change', channel=0, control=dialControl, value=self.midi_cc)
+                            self.midi_port.send(cc_message)
+
+                    except Exception as e:
+                        print(f"Error reading characteristics from {self.address}: {e}")
+                else:
+                    print(f"Client {self.address} disconnected. Attempting to reconnect...")
+                    await self.reconnect()
+
+                await asyncio.sleep(0.1)
         except asyncio.CancelledError:
             print(f"Polling stopped for {self.address}")
+
+    async def send_led_command(self, led_index, r, g, b):
+        """
+        Send an LED command to the ESP32 via the WS2813_CHARACTERISTIC_UUID.
+
+        Args:
+            led_index (int): The index of the LED to control.
+            r (int): Red value (0-255).
+            g (int): Green value (0-255).
+            b (int): Blue value (0-255).
+        """
+        if self.client.is_connected:
+            command = json.dumps({
+                "index": led_index,
+                "r": r,
+                "g": g,
+                "b": b
+            }).encode('utf-8')
+            try:
+                await self.client.write_gatt_char(WS2813_CHARACTERISTIC_UUID, command)
+                print(f"Sent LED command: {command}")
+            except Exception as e:
+                print(f"Error sending LED command: {e}")
+        else:
+            print(f"Cannot send LED command. Device {self.address} not connected.")
+
 
 async def discover_devices(service_uuid):
     matched_devices = []
@@ -76,12 +155,28 @@ async def discover_devices(service_uuid):
 
     print("Scanning for devices...")
     await scanner.start()
-    await asyncio.sleep(5)  # Scan duur
+    await asyncio.sleep(5)  # Adjust the scan duration as needed
     await scanner.stop()
 
     return matched_devices
 
+async def monitor_new_devices(service_uuid, midi_port):
+    global controllers
+
+    while True:
+        new_devices = await discover_devices(service_uuid)
+        for device in new_devices:
+            if not any(controller.address == device.address for controller in controllers):
+                print(f"Adding new device: {device.address}")
+                new_controller = CrowdController(device.address, midi_port, control=len(controllers))
+                controllers.append(new_controller)
+                await new_controller.connect()                
+                asyncio.create_task(new_controller.poll_characteristics())
+
+        await asyncio.sleep(10)  # Adjust the interval for scanning
+
 async def main():
+    global controllers
     midi_port = mido.open_output("CrowdController")
     matched_devices = await discover_devices(SERVICE_UUID)
 
@@ -89,18 +184,21 @@ async def main():
         print("No devices found with the specified service UUID.")
         return
 
-    controllers = [CrowdController(device.address, midi_port, control=i*10) for i, device in enumerate(matched_devices[:8], start=1)]
-    # i * 10 voor elk apparaat, startend vanaf 1
+    controllers = [CrowdController(device.address, midi_port, control=i) for i, device in enumerate(matched_devices[:8])] # Limit to 8 devices
 
     try:
+        # Connect to all controllers and start polling
         for controller in controllers:
-            await controller.connect()
+            await controller.connect()                        
 
         poll_tasks = [asyncio.create_task(controller.poll_characteristics()) for controller in controllers]
-        await asyncio.gather(*poll_tasks)
+        monitor_task = asyncio.create_task(monitor_new_devices(SERVICE_UUID, midi_port))
+
+        await asyncio.gather(*poll_tasks, monitor_task)
     except KeyboardInterrupt:
         print("Program interrupted by user. Disconnecting...")
     finally:
+        # Disconnect all controllers
         for controller in controllers:
             await controller.disconnect()
 
