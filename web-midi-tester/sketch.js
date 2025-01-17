@@ -3,6 +3,9 @@
 
 let nControls = 16; // Number of MIDI controls
 let circles = []; // Array to store circle data
+
+let channels = [11,12,21,22,31,32,41,42,51,52,61,62,71,72,81,82];
+
 class Circle {
     constructor(x, y, size, brightness, index) {
         this.x = x;
@@ -55,15 +58,24 @@ function draw() {
 function handleControlChange(e) {
     const control = e.controller.number;
     const value = e.value;
+
+    console.log(control);
+    
+    let iCircle = channels.findIndex(function (channel) {
+        return channel==control;
+    });
+
+    console.log(iCircle);
+    
     //console.log("Control change:", control, value);
     // Map MIDI control value to size and brightness
     const size = map(value, 0, 1, 10, 200);
     const brightness = map(value, 0, 1, 50, 255);
 
     // Update circle data
-    circles[control].index = control;
-    circles[control].size = size;
-    circles[control].brightness = brightness;
+    circles[iCircle].index = control;
+    circles[iCircle].size = size;
+    circles[iCircle].brightness = brightness;
 }
 
 

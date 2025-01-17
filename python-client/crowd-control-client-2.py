@@ -73,16 +73,21 @@ class CrowdController:
                 if self.client.is_connected:
                     try:
 
-                        buttonControl = ((self.control+1)*10)+1
+
                         # Read button characteristic
                         button_data = await self.client.read_gatt_char(BUTTON_CHARACTERISTIC_UUID)
-                        self.last_button_state = self.button_state
-                        self.button_state = int(button_data.decode())
+                        current_button_state = int(button_data.decode())
 
-                        if (self.last_button_state != self.button_state):
-                            # Send MIDI messages
-                            cc_message = mido.Message('control_change', channel=0, control=buttonControl, value=self.button_state * 127)
-                            self.midi_port.send(cc_message)
+                        # Toggle button state only when transitioning from 0 -> 1
+                        if current_button_state == 1 and self.last_button_state == 0:
+                            self.button_state = 127 if self.button_state == 0 else 0
+
+                        self.last_button_state = current_button_state  # Store previous state
+
+                        buttonControl = ((self.control+1)*10)+1
+                        cc_message = mido.Message('control_change', channel=0, control=buttonControl, value=self.button_state)
+                        self.midi_port.send(cc_message)
+
 
                         # Read rotary characteristic
                         dialControl = buttonControl+1
