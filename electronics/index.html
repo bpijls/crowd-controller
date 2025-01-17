@@ -1,0 +1,1112 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Crowd Controller">
+      
+      
+        <meta name="author" content="Bas Pijls">
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../enclosure/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.45">
+    
+    
+      
+        <title>Electronics - Crowd Controller</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#electronics" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Crowd Controller" class="md-header__button md-logo" aria-label="Crowd Controller" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 9.85 19.14 7h-.5v3.79L16.35 8.5l-.71.71L18.43 12l-2.79 2.79.71.71 2.29-2.29V17h.5L22 14.15 19.85 12zm-2.36-.94.94.94-.94.94zm.94 5.24-.94.94v-1.88zM9.64 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Crowd Controller
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Electronics
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Crowd Controller" class="md-nav__button md-logo" aria-label="Crowd Controller" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 9.85 19.14 7h-.5v3.79L16.35 8.5l-.71.71L18.43 12l-2.79 2.79.71.71 2.29-2.29V17h.5L22 14.15 19.85 12zm-2.36-.94.94.94-.94.94zm.94 5.24-.94.94v-1.88zM9.64 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3z"/></svg>
+
+    </a>
+    Crowd Controller
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Electronics
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Electronics
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bom" class="md-nav__link">
+    <span class="md-ellipsis">
+      BOM
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schematic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schematic
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schematic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#power" class="md-nav__link">
+    <span class="md-ellipsis">
+      Power
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#led-rings" class="md-nav__link">
+    <span class="md-ellipsis">
+      LED Rings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pin-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pin numbers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decoupling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decoupling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unused-pins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unused pins
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pcb" class="md-nav__link">
+    <span class="md-ellipsis">
+      PCB
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PCB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connectors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#esp32-placement" class="md-nav__link">
+    <span class="md-ellipsis">
+      ESP32 placement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#switch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Switch
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prototype" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prototype
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prototype">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Improvements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Improvements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      High priority
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#low-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      Low priority
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schematic_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schematic
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schematic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#power_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Power
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#led-rings_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      LED Rings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pcb_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      PCB
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PCB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connectors_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connectors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#esp32-placement_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      ESP32 placement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#switch_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Switch
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prototype_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prototype
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enclosure/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Enclosure
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../software/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Software
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bom" class="md-nav__link">
+    <span class="md-ellipsis">
+      BOM
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schematic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schematic
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schematic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#power" class="md-nav__link">
+    <span class="md-ellipsis">
+      Power
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#led-rings" class="md-nav__link">
+    <span class="md-ellipsis">
+      LED Rings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pin-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pin numbers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decoupling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decoupling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unused-pins" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unused pins
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pcb" class="md-nav__link">
+    <span class="md-ellipsis">
+      PCB
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PCB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connectors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#esp32-placement" class="md-nav__link">
+    <span class="md-ellipsis">
+      ESP32 placement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#switch" class="md-nav__link">
+    <span class="md-ellipsis">
+      Switch
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prototype" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prototype
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prototype">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Improvements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Improvements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      High priority
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#low-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      Low priority
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schematic_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schematic
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schematic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#power_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Power
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#led-rings_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      LED Rings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pcb_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      PCB
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PCB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connectors_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connectors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#esp32-placement_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      ESP32 placement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#switch_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Switch
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prototype_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prototype
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<div><h1 id="electronics">Electronics<a class="headerlink" href="#electronics" title="Permanent link">¶</a></h1>
+<h2 id="bom">BOM<a class="headerlink" href="#bom" title="Permanent link">¶</a></h2>
+<ul>
+<li><a href="https://michiel.vanderwulp.be/domotica/Modules/ESP32-C3-SuperMini/">ESP32 C3 Mini Dev Board</a></li>
+<li><a href="https://nl.aliexpress.com/item/1005005983134515.html?spm=a2g0o.productlist.main.1.a4cc37c83Cb6cO&amp;algo_pvid=dab1d344-3dae-49fb-ae73-5fa2b2fbe406&amp;algo_exp_id=dab1d344-3dae-49fb-ae73-5fa2b2fbe406-0&amp;pdp_npi=4%40dis%21EUR%212.92%212.92%21%21%213.01%213.01%21%40211b812f17328732251698217e7bb8%2112000035172713577%21sea%21NL%21162207786%21X&amp;curPageLogUid=8pbVyvYOEqu8&amp;utparam-url=scene%3Asearch%7Cquery_from%3A">EC11 Rotary Encoder</a></li>
+<li><a href="https://nl.aliexpress.com/item/1005006982206943.html?spm=a2g0o.productlist.main.1.6183135c8ddOg3&amp;algo_pvid=51850496-99cd-4c2b-9559-2ebbc5af4890&amp;algo_exp_id=51850496-99cd-4c2b-9559-2ebbc5af4890-0&amp;pdp_npi=4%40dis%21EUR%213.90%211.64%21%21%2129.11%2112.23%21%4021038e1e17328733147107209e3c8f%2112000038933416726%21sea%21NL%21162207786%21X&amp;curPageLogUid=TqEXwYRFevqM&amp;utparam-url=scene%3Asearch%7Cquery_from%3A">Ws2812b</a> Led ring 12 leds (Button)</li>
+<li>WS2812B Led ring 16 leds (Dial)</li>
+<li><a href="https://nl.aliexpress.com/item/1005005883809271.html?spm=a2g0o.productlist.main.1.96f21881Opzm2b&amp;algo_pvid=6a5a3c47-aefd-421d-b705-70ccebe1c391&amp;algo_exp_id=6a5a3c47-aefd-421d-b705-70ccebe1c391-0&amp;pdp_npi=4%40dis%21EUR%212.49%212.49%21%21%212.57%212.57%21%40211b81a317328743333334675e8be2%2112000034696162305%21sea%21NL%21162207786%21X&amp;curPageLogUid=vR9BmacB3nCR&amp;utparam-url=scene%3Asearch%7Cquery_from%3A">2X CR123A</a> Battery holder</li>
+<li>JST Connectors (1x2pin, 1x3pin and 1x4pin)</li>
+<li><a href="https://nl.aliexpress.com/w/wholesale-sk12d07vg3.html?spm=a2g0o.detail.search.0">Toggle switch</a></li>
+<li>2x100nF capacitor (SMD 0805)</li>
+<li>2x10uF capacitor (SMD 0805)</li>
+<li>1x diode (SMD 0805)</li>
+</ul>
+<details class="note">
+<summary>LED Ring Sizes</summary>
+<p>LED with an equal number of LED’s don’t necessarily have the same diameter. Ultimately these LED-Rings were used:</p>
+<table>
+<thead>
+<tr>
+<th><a href="https://www.otronic.nl/en/8-bit-rgb-leds-ws2812b-circle-round-neopixel.html">Button ring</a></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LEDs</td>
+<td>8</td>
+</tr>
+<tr>
+<td>inner diameter</td>
+<td>18mm</td>
+</tr>
+<tr>
+<td>outer diameter</td>
+<td>32mm</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><a href="https://www.otronic.nl/en/16-bit-rgb-leds-ws2812b-circle-round-neopixel.html">Dial ring</a></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LEDs</td>
+<td>16</td>
+</tr>
+<tr>
+<td>inner diameter</td>
+<td>54mm</td>
+</tr>
+<tr>
+<td>outer diameter</td>
+<td>70mm</td>
+</tr>
+</tbody>
+</table>
+</details>
+<h2 id="schematic">Schematic<a class="headerlink" href="#schematic" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th><img alt="cc_schematic_1" src="../cc_schematic_1.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Schematic Version 1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="power">Power<a class="headerlink" href="#power" title="Permanent link">¶</a></h3>
+<p>A diode is placed between the batteries and the <code>VCC</code> net in order to prevent current to flow back to the batteries when connected to the USB.</p>
+<h3 id="led-rings">LED Rings<a class="headerlink" href="#led-rings" title="Permanent link">¶</a></h3>
+<p>The LED rings are now controlled by the ESP32 as one strip. The <code>DO</code> (<strong>D</strong>ata <strong>O</strong>ut) pin of the dial ring is connected to the <code>DI</code> (<strong>D</strong>ata <strong>I</strong>n) pin of the button ring. This will have less implications the timing in the firmware, as there is only one LED strip to manage.</p>
+<h3 id="pin-numbers">Pin numbers<a class="headerlink" href="#pin-numbers" title="Permanent link">¶</a></h3>
+<p>The rotary encoder now uses pins 20 and 21.</p>
+<h3 id="decoupling">Decoupling<a class="headerlink" href="#decoupling" title="Permanent link">¶</a></h3>
+<p>The ESP32 and the LED strip are now decoupled with a 100nF and a 10uF capacitor each to prevent voltage fluctuations.</p>
+<h3 id="unused-pins">Unused pins<a class="headerlink" href="#unused-pins" title="Permanent link">¶</a></h3>
+<p>Unused pins are now broken out for future prototyping.</p>
+<h2 id="pcb">PCB<a class="headerlink" href="#pcb" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th><img alt="pcb_top_v1" src="../pcb_top_v1.png"></th>
+<th><img alt="pcb_bottom_v1" src="../pcb_bottom_v1.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Top</td>
+<td>Bottom</td>
+</tr>
+</tbody>
+</table>
+<h3 id="connectors">Connectors<a class="headerlink" href="#connectors" title="Permanent link">¶</a></h3>
+<p>JST connectors are used instead of bare pins.</p>
+<h3 id="esp32-placement">ESP32 placement<a class="headerlink" href="#esp32-placement" title="Permanent link">¶</a></h3>
+<p>The ESP32 is now placed above a bare patch so there is less ground plane interference. To keep it less close to the metal of the rotary encoder, the ESP32 is now placed more to the side.</p>
+<h3 id="switch">Switch<a class="headerlink" href="#switch" title="Permanent link">¶</a></h3>
+<p>Instead of bare pins, the battery power is now switched by a <a href="https://nl.aliexpress.com/w/wholesale-sk12d07vg3.html?spm=a2g0o.detail.search.0">small switch</a> at a 90 degree angle so the switch can be operated through a small hole at the side of the enclosure.</p>
+<h2 id="prototype">Prototype<a class="headerlink" href="#prototype" title="Permanent link">¶</a></h2>
+<ul>
+<li>Due to an error in the ESP32 part chosen for the schematic, <code>pin20</code> and pin21<code>where inadvertently chosen for the rotary encoder. These pins turned out to be</code>RX<code>and</code>TX` which are used for the serial port. Luckily pins 4 and 5 were broken out and situated very close to the rotary encoder on the PCB so this could easily be fixed in the prototype.</li>
+<li>Freshly charged Cr123 cells have a higher voltage than nominal so the total voltage of the power supply was &gt;8v in some cases. This is too high for both the ESP32 and the WS2812. This was fixed by:<ul>
+<li>Connecting the cells in parallel. Now the total voltage is nominally 3.7v which is a little too low but workable.</li>
+<li>Omitting the diode because the voltage drop of the diode would  get the voltage even lower.</li>
+</ul>
+</li>
+<li>The pin-headers weren’t situated conveniently enough for the enclosure. The pin header for the button-ledring should me moved closer to the button.</li>
+<li>The ESP32 might as well be on the top of the board as it does not take to much space and sometimes it needs to be reset after the PCB has been built into the enclosure.</li>
+</ul>
+<h3 id="improvements">Improvements<a class="headerlink" href="#improvements" title="Permanent link">¶</a></h3>
+<h4 id="high-priority">High priority<a class="headerlink" href="#high-priority" title="Permanent link">¶</a></h4>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"><span class="task-list-indicator"></span></label> Place ESP32 on top</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"><span class="task-list-indicator"></span></label> Put power cells in parallel or place a voltage regulator between cells and <code>VCC</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"><span class="task-list-indicator"></span></label> Use <code>pin4</code> and <code>pin5</code> for the rotary encoder.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"><span class="task-list-indicator"></span></label> Break out <code>pin20</code> and <code>pin21</code> as <code>RXD</code> and <code>TXD</code></li>
+</ul>
+<h4 id="low-priority">Low priority<a class="headerlink" href="#low-priority" title="Permanent link">¶</a></h4>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox"><span class="task-list-indicator"></span></label> Battery charging using the <a href="https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/#battery-usage">XIAO ESP32</a> instead of the ESP32-Supermini boards</li>
+</ul>
+<details class="note">
+<summary>Previous versions</summary>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">Version 0</label><label for="__tabbed_1_2">Version 1</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<h2 id="schematic_1">Schematic<a class="headerlink" href="#schematic_1" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th><img alt="cc_schematic_0" src="../cc_schematic_0.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Schematic</td>
+</tr>
+</tbody>
+</table>
+<h3 id="power_1">Power<a class="headerlink" href="#power_1" title="Permanent link">¶</a></h3>
+<p>Two 3.7v batteries are serially connected to yield a maximum of 7.4v. The voltage regulator on the ESP32C3-Mini board will turn it into 3.3v for the ESP32. The WS2812 will hopefully be able to operate at a higher voltage.</p>
+<h3 id="led-rings_1">LED Rings<a class="headerlink" href="#led-rings_1" title="Permanent link">¶</a></h3>
+<p>The two LED rings will each have a separate pin from the microcontroller.</p>
+<h2 id="pcb_1">PCB<a class="headerlink" href="#pcb_1" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th><img alt="pcb_bottom" src="../pcb_bottom.png"></th>
+<th><img alt="pcb_top" src="../pcb_top.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bottom</td>
+<td>Top</td>
+</tr>
+</tbody>
+</table>
+<h3 id="connectors_1">Connectors<a class="headerlink" href="#connectors_1" title="Permanent link">¶</a></h3>
+<p>The LED rings and the button will be connected using standard dupont cables. All connectors are situated at the bottom of the board.</p>
+<h3 id="esp32-placement_1">ESP32 placement<a class="headerlink" href="#esp32-placement_1" title="Permanent link">¶</a></h3>
+<p>The ESP32 will be placed with the USB connector pointing upwards.</p>
+<h3 id="switch_1">Switch<a class="headerlink" href="#switch_1" title="Permanent link">¶</a></h3>
+<p>The battery power can be turned on or off by shorting two pins.</p>
+<h2 id="prototype_1">Prototype<a class="headerlink" href="#prototype_1" title="Permanent link">¶</a></h2>
+<p>Reflecting on the prototype:</p>
+<ul>
+<li>The Bluetooth antenna of the ESP32 board was right above the ground plane which greatly diminished the bluetooth range.</li>
+<li>Unused pins weren’t broken out so it was hard to add new features for prototyping.</li>
+<li>Bare connectors tend to get loose. Better use JST connectors instead.</li>
+<li>Using a jumper to switch on the device can’t work if the device is inside an enclosure.</li>
+<li>Two separate WS2812 strips might make it harder to manage timing in software</li>
+</ul>
+</div>
+<div class="tabbed-block"></div>
+</div>
+</div>
+</details></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2024 Bas Pijls
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["search.share", "content.code.annotate", "navigation.sections", "content.tabs.link", "content.code.copy"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
+      
+    
+  </body>
+</html>
