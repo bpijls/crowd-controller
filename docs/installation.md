@@ -35,7 +35,7 @@ pip install -r requirements.txt
 Then you can run the client with:
 
 ```bash
-python3 crowd-control-client.py.py
+python3 crowd-control-client.py
 ```
 
 !!! tip "Testing the midi device"
