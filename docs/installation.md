@@ -24,7 +24,13 @@ To create a virtual midi device on Windows you can use the `loopMIDI` applicatio
 
 ## Python client
 
-To use the python library you need to install some libraries, preferably in a virtual environment. `cd` into the `crowd-controller/python-client` directory and run the following commands:
+To use the python library you need to install some libraries, preferably in a virtual environment. `cd` into the `crowd-controller/python-client` directory:
+
+```bash
+cd python-client
+```
+
+and run the following commands:
 
 ```bash
 python3 -m venv venv
